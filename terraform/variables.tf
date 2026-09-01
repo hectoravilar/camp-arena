@@ -32,3 +32,17 @@ variable "aws_region" {
   default     = "us-east-1"
 
 }
+
+variable "cluster_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+  default     = "camp-arena-cluster"
+
+}
+
+variable "cluster_version" {
+  description = "The Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.30"
+
+}
