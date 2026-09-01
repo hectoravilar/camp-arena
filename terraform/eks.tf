@@ -19,7 +19,7 @@ module "eks" {
   eks_managed_node_groups = {
     camp_arena_nodes = {
       # Utilizing the lightweight and fast Amazon Linux 2023 for containers
-      ami_type       = "AL2023_x86_64"
+      ami_type       = "AL2023_x86_64_STANDARD"
       instance_types = ["t3.medium"]
 
       # Auto Scaling configuration for cost efficiency during MVP
