@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class MatchManager {
+public class MatchManager {     
 
     // Thread-safe maps for players and active WebSocket sessions
     private final Map<String, Player> players = new ConcurrentHashMap<>();
