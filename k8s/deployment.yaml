@@ -1,0 +1,31 @@
+# Specifies the API version and the type of Kubernetes resource
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: camp-arena-server
+  labels:
+    app: camp-arena-server
+spec:
+  # Runs 2 identical copies (Pods) of our Java server for High Availability
+  replicas: 2
+
+  # Tells the Deployment how to find the Pods it needs to manage
+  selector:
+    matchLabels:
+      app: camp-arena-server
+
+  # The blueprint for the Pods that will be created
+  template:
+    metadata:
+      labels:
+        # This label MUST match the selector above and the Service selector
+        app: camp-arena-server
+    spec:
+      containers:
+        - name: camp-arena-server
+          # The Docker image pulled from our private AWS ECR repository
+          # Note: <AWS_ACCOUNT_ID> will be replaced during the CI/CD pipeline
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/camp-arena-server:latest
+          ports:
+            # The port our Spring Boot application is listening on
+            - containerPort: 8080

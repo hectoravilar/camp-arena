@@ -1,0 +1,19 @@
+# Specifies the API version for networking resources
+apiVersion: v1
+kind: Service
+metadata:
+  name: camp-arena-service
+spec:
+  # Tells Kubernetes to provision a public cloud Load Balancer (AWS ELB)
+  type: LoadBalancer
+
+  # Routes internet traffic ONLY to Pods that have this exact label
+  selector:
+    app: camp-arena-server
+
+  ports:
+    - protocol: TCP
+      # The port exposed to the internet (standard HTTP)
+      port: 80
+      # The internal port where our Docker container is listening
+      targetPort: 8080
