@@ -46,3 +46,9 @@ variable "cluster_version" {
   default     = "1.30"
 
 }
+
+variable "ecr_repository_name" {
+  description = "The name of the ECR repository"
+  type        = string
+  default     = "camp-arena-repo"
+}
