@@ -1,0 +1,51 @@
+name: CI/CD - Game Server
+
+# Trigger the workflow only when code is pushed to the main branch
+# and only if the changes affect the game-server or k8s directories
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'game-server/**'
+      - 'k8s/**'
+
+jobs:
+  build-and-push:
+    name: Build Docker Image and Push to ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code into the GitHub Actions runner
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Step 2: Authenticate with AWS using repository secrets
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Step 3: Log in to the Amazon ECR registry
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Step 4: Build the Docker image and push it to the ECR repository
+      - name: Build, Tag, and Push Image to Amazon ECR
+        env:
+          # The ECR registry URL is output by the login-ecr step automatically
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: camp-arena-server
+          IMAGE_TAG: latest
+        run: |
+          # Navigate to the Java application directory where the Dockerfile is located
+          cd game-server
+          
+          # Build the Docker image using our multi-stage Dockerfile
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          
+          # Push the built image to the AWS ECR repository
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
