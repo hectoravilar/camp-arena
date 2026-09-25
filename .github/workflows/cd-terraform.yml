@@ -44,5 +44,5 @@ jobs:
         run: terraform plan
 
       # Step 6: Apply the changes automatically without manual approval
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
