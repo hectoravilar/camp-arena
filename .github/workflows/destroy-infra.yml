@@ -1,0 +1,49 @@
+name: Destroy Infrastructure
+
+# Trigger the workflow manually via the GitHub Actions UI.
+# Essential for on-demand teardown of cloud environments to prevent idle resource billing.
+on:
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    name: Tear Down EKS and VPC
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Clone the repository to access the Terraform and Kubernetes configuration files.
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Step 2: Authenticate with AWS IAM using securely stored GitHub Secrets.
+      # Adheres to the security best practice of not hardcoding credentials in plain text.
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # Step 3: Update the local kubeconfig file to establish communication with the EKS cluster API.
+      - name: Update Kubeconfig
+        run: aws eks update-kubeconfig --region us-east-1 --name camp-arena-cluster-v3
+
+      # Step 4: Purge Kubernetes-native resources first.
+      # This critical step destroys dynamic resources like AWS Classic/Network Load Balancers
+      # provisioned by Kubernetes Services, preventing VPC deletion deadlocks during the Terraform phase.
+      # The "|| true" ensures the pipeline continues even if the resources are already deleted.
+      - name: Delete Kubernetes Resources
+        run: kubectl delete -f k8s/ || true
+
+      # Step 5: Initialize the Terraform working directory and fetch the remote state from the S3 backend.
+      - name: Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      # Step 6: Execute the destruction of all infrastructure tracked by the Terraform state file.
+      # The -auto-approve flag bypasses manual confirmation, enabling full CI/CD automation.
+      - name: Terraform Destroy
+        run: |
+          cd terraform
+          terraform destroy -auto-approve
