@@ -52,3 +52,9 @@ variable "ecr_repository_name" {
   type        = string
   default     = "camp-arena-repo"
 }
+
+variable "my_bucket" {
+  description = "The name of the S3 bucket for Terraform state"
+  type        = string
+  default     = "my_bucket"
+}
