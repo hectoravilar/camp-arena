@@ -2,20 +2,22 @@ package com.camparena.server.model;
 
 public class Player {
     private String id;
-    private String name;
+    private double x;
+    private double y;
 
-    // Default constructor required by frameworks like Spring and Jackson (for JSON
-    // parsing)
+    // Default constructor
     public Player() {
     }
 
-    // Constructor to initialize a new player with specific data
-    public Player(String id, String name) {
+    // Constructor matching the (String, double, double) format requested by
+    // MatchManager
+    public Player(String id, double x, double y) {
         this.id = id;
-        this.name = name;
+        this.x = x;
+        this.y = y;
     }
 
-    // Getters and Setters to access and modify private properties safely
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -24,11 +26,19 @@ public class Player {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public double getX() {
+        return x;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 }
